@@ -15,4 +15,12 @@ public class ClassDiagram {
     public List<String> getCodeSmells() {
         return null;
     }
+
+    /**
+     * 你应当在迭代三中实现这个方法
+     * @param configFile 配置文件路径
+     */
+    public void loadConfig(String configFile) {
+        return;
+    }
 }
