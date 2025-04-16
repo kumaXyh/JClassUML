@@ -192,7 +192,7 @@ public class MixTest {
                 containsCycle(codeSmells, "Game <.. Cell <.. PropertyCell <.. Game")||
                 containsCycle(codeSmells, "PropertyCell <.. Player <.. PropertyCell")||
                 containsCycle(codeSmells, "Cell <.. PropertyCell <.. Player <.. Cell"),
-                "circular dependency: Player <.. Game <.. Cell <.. PropertyCell <.. Player");
+                "you should report at least one correct circular dependency");
 
         // 测试设计模式
         assertTrue(!codeSmells.contains("Possible Design Patterns: Strategy Pattern"),
@@ -339,10 +339,12 @@ public class MixTest {
         assertTrue(!codeSmells.contains("Lazy Class: Token"), "Class Analyzer should not work");
 
         assertTrue(containsCycle(codeSmells, "Expr <.. LambdaExpr <.. Visitor <.. Expr")||
-                containsCycle(codeSmells, "LambdaExpr <.. Visitor <.. LambdaExpr")||
-                containsCycle(codeSmells, "VarExpr <.. Visitor <.. VarExpr")||
-                containsCycle(codeSmells, "AppExpr <.. Visitor <.. AppExpr"),
-                "Circular Dependency Analyzer should work and you should report: Expr <.. LambdaExpr <.. Visitor <.. Expr");
+                        containsCycle(codeSmells, "LambdaExpr <.. Visitor <.. LambdaExpr")||
+                        containsCycle(codeSmells, "VarExpr <.. Visitor <.. VarExpr")||
+                        containsCycle(codeSmells, "AppExpr <.. Visitor <.. AppExpr")||
+                        containsCycle(codeSmells, "Expr <.. VarExpr <.. Visitor <.. Expr")||
+                        containsCycle(codeSmells, "Expr <.. AppExpr <.. Visitor <.. Expr"),
+                "Circular Dependency Analyzer should work and you should report at least one circular dependency");
 
         CommandLineTool commandLine = new CommandLineTool(diagram);
 
