@@ -155,15 +155,12 @@ public class MultiFileTest {
         assertEquals(1, countSubstring(uml, "SiblingLink <|.. LeafNode"), "SiblingLink <|.. LeafNode should appear once");
         assertEquals(1, countSubstring(uml, "SplitResult <.. LeafNode"), "SplitResult <.. LeafNode should appear once");
         assertEquals(1, countSubstring(uml, "Node <-- SplitResult"), "Node <-- SplitResult should appear once"); 
-        assertEquals(0, countSubstring(uml, "Node <.. SplitResult"), "Node <-- SplitResult should not appear"); 
-        
-        // 测试UML类图中的元素
-        // 测试Lazy类
-        List<String> codeSmells = new ArrayList<String>();
-        codeSmells.add("Circular Dependency: LeafNode <.. SiblingLink <.. LeafNode");
-        codeSmells.add("Circular Dependency: Node <.. SplitResult <.. Node");
-//        assertTrue(codeSmells.contains("Lazy Class: Entry"), "Entry should be a lazy class");
-//        assertTrue(codeSmells.contains("Lazy Class: SplitResult"), "SplitResult should be a lazy class");
+        assertEquals(0, countSubstring(uml, "Node <.. SplitResult"), "Node <-- SplitResult should not appear");
+
+        List<String> codeSmells = diagram.getCodeSmells();
+        assertTrue(codeSmells.contains("Lazy Class: Entry"), "Entry should be a lazy class");
+        assertTrue(codeSmells.contains("Lazy Class: SplitResult"), "SplitResult should be a lazy class");
+
         // 测试设计模式
         assertFalse(codeSmells.contains("Possible Design Patterns: Singleton Pattern"),
                 "BPlusTree should not have Singleton Pattern");
