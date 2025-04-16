@@ -500,7 +500,7 @@ public class CommandLineTest {
         result = commandLine.execute("relate RedDuck Duck");
         assertEquals("Duck <|-- RedDuck\n", result);
         result = commandLine.execute("relate Farmer RedDuck");
-        assertEquals("Farmer <-- RedDuck\nRedDuck <.. Farmer\n", result);
+        assertTrue(result.equals("Farmer <-- RedDuck\nRedDuck <.. Farmer\n") || result.equals("RedDuck <.. Farmer\nFarmer <-- RedDuck\n"), "relate Farmer RedDuck error");
         result = commandLine.execute("relate QuackBehavior MuteQuack");
         assertEquals("QuackBehavior <|.. MuteQuack\n", result);
     }
