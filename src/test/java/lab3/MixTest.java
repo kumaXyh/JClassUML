@@ -125,8 +125,8 @@ public class MixTest {
         String expecttCell2 = """
                 abstract class Cell {
                     # game: Game
-                    + setGame(game: Game): void
                     + {abstract} meet(player: Player): void
+                    + setGame(game: Game): void
                 }
                 """;
         assertTrue(uml.contains(expecttCell1) || uml.contains(expecttCell2),
