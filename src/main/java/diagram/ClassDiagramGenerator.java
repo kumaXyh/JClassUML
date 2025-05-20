@@ -29,6 +29,16 @@ public class ClassDiagramGenerator {
 
             ClassInfo classInfo = new ClassInfo();
             classInfo.setName(decl.getNameAsString());
+
+            //解析继承关系
+            decl.getExtendedTypes().forEach(type ->{
+                classInfo.setExtendsClass(type.getNameAsString());
+            });
+
+            //解析接口实现
+            decl.getImplementedTypes().forEach(type ->{
+                classInfo.addImplementsInterface(type.getNameAsString());
+            });
             
             //解析字段
             decl.getFields().forEach(field -> {
@@ -85,7 +95,13 @@ public class ClassDiagramGenerator {
 
             InterfaceInfo interfaceInfo=new InterfaceInfo();
             interfaceInfo.setName(decl.getNameAsString());
+
+            //解析接口继承
+            decl.getExtendedTypes().forEach(type ->{
+                interfaceInfo.addExtendsInterface(type.getNameAsString());
+            });
             
+            //解析方法
             decl.getMethods().forEach(method ->{
                 Method m=new Method();
                 //接口方法强制为public

@@ -19,6 +19,8 @@ public class ClassDiagram {
     public String generateUML() {
         StringBuilder sb=new StringBuilder();
         sb.append("@startuml\n");
+
+        //输出类和接口的定义
         for(ClassInfo classInfo : classes){
             sb.append("class ").append(classInfo.getName()).append(" {\n");
             for(Field field : classInfo.getFields()){
@@ -35,6 +37,26 @@ public class ClassDiagram {
                 sb.append("    ").append(method.toUMLString()).append("\n");
             }
             sb.append("}\n");
+        }
+
+        //输出继承和实现关系
+        for(ClassInfo classInfo : classes){
+            if(classInfo.getExtendsClass()!=null){
+                sb.append(classInfo.getExtendsClass()).append(" <|-- ")
+                    .append(classInfo.getName()).append("\n");
+            }
+
+            for(String interfaceName: classInfo.getImplementsInterfaces()){
+                sb.append(interfaceName).append(" <|.. ")
+                    .append(classInfo.getName()).append("\n");
+            }
+        }
+        //接口继承关系
+        for(InterfaceInfo interfaceInfo : interfaces){
+            for(String parentInterface: interfaceInfo.getExtendsInterfaces()){
+                sb.append(parentInterface).append(" <|-- ")
+                    .append(interfaceInfo.getName()).append("\n");
+            }
         }
         sb.append("@enduml");
         return sb.toString();
