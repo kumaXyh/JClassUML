@@ -18,6 +18,7 @@ public class ClassDiagramGenerator {
 
         cu.accept(new ClassVisitor(), classDiagram);
         cu.accept(new InterfaceVisitor(), classDiagram);
+        cu.accept(new EnumVisitor(), classDiagram);
 
         return classDiagram;
     }
@@ -25,10 +26,11 @@ public class ClassDiagramGenerator {
     private static class ClassVisitor extends VoidVisitorAdapter<ClassDiagram>{
         @Override
         public void visit(ClassOrInterfaceDeclaration decl, ClassDiagram diagram){
-            if(decl.isInterface()||decl.isAbstract())return;
+            if(decl.isInterface())return;
 
             ClassInfo classInfo = new ClassInfo();
             classInfo.setName(decl.getNameAsString());
+            classInfo.setAbstract(decl.isAbstract());
 
             //解析继承关系
             decl.getExtendedTypes().forEach(type ->{
@@ -58,11 +60,13 @@ public class ClassDiagramGenerator {
 
             //解析方法
             decl.getMethods().forEach(method ->{
+                //构造函数不输出
                 if (method.getName().asString().equals(decl.getNameAsString())) return; 
 
                 Method m=new Method();
                 m.setAccessModifier(convertModifier(method.getAccessSpecifier()));
                 m.setStatic(method.isStatic());
+                m.setAbstract(method.isAbstract());
                 m.setName(method.getNameAsString());
                 m.setReturnType(method.getType().asString());
 
@@ -107,6 +111,7 @@ public class ClassDiagramGenerator {
                 //接口方法强制为public
                 m.setAccessModifier("+");
                 m.setStatic(method.isStatic());
+                m.setAbstract(method.isAbstract());
                 m.setName(method.getNameAsString());
                 m.setReturnType(method.getType().asString());
 
@@ -121,6 +126,62 @@ public class ClassDiagramGenerator {
             });
 
             diagram.addInterface(interfaceInfo);
+        }
+    }
+
+    private static class EnumVisitor extends VoidVisitorAdapter<ClassDiagram> {
+        @Override
+        public void visit(EnumDeclaration decl,ClassDiagram diagram){
+            EnumInfo enumInfo = new EnumInfo();
+            enumInfo.setName(decl.getNameAsString());
+
+            //解析枚举常量
+            decl.getEntries().forEach(entry->{
+                String constant=entry.getNameAsString();
+                if(entry.getArguments().isNonEmpty()){
+                    constant+=entry.getArguments().toString();
+                }
+                enumInfo.getConstants().add(constant);
+            });
+
+            //解析字段
+            decl.getFields().forEach(field -> {
+                boolean isStatic=field.isStatic();
+                String type=field.getElementType().asString();
+
+                field.getVariables().forEach(v->{
+                    Field f=new Field();
+                    //默认private
+                    f.setAccessModifier("-");
+                    f.setStatic(isStatic);
+                    f.setName(v.getNameAsString());
+                    f.setType(type);
+                    enumInfo.getFields().add(f);
+                });
+            });
+
+            //解析方法
+            decl.getMethods().forEach(method->{
+                //不输出构造函数
+                if (method.getName().asString().equals(decl.getNameAsString())) return; 
+
+                Method m = new Method();
+                m.setAccessModifier("+");
+                m.setStatic(method.isStatic());
+                m.setName(method.getNameAsString());
+                m.setReturnType(method.getType().asString());
+
+                method.getParameters().forEach(p->{
+                    Parameter param=new Parameter();
+                    param.setName(p.getNameAsString());
+                    param.setType(p.getType().asString());
+                    m.getParameters().add(param);
+                });
+
+                enumInfo.getMethods().add(m);
+            });
+
+            diagram.addEnum(enumInfo);
         }
     }
 }

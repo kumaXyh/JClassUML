@@ -4,7 +4,9 @@ public class Field extends Member{
     private String type;
 
     public String toUMLString() {
-        return accessModifier + (isStatic ? " {static} " : " ") + name + ": " + type;
+        //逗号后加空格
+        String formattedType=type.replace(",", ", ");
+        return accessModifier + (isStatic ? " {static} " : " ") + name + ": " + formattedType;
     }
 
     // Getters and Setters
