@@ -32,6 +32,11 @@ public class ClassDiagramGenerator {
             classInfo.setName(decl.getNameAsString());
             classInfo.setAbstract(decl.isAbstract());
 
+            //解析类泛型参数
+            if(decl.getTypeParameters().isNonEmpty()){
+                classInfo.setTypeParameters(decl.getTypeParameters().toString());
+            }
+
             //解析继承关系
             decl.getExtendedTypes().forEach(type ->{
                 classInfo.setExtendsClass(type.getNameAsString());
@@ -70,6 +75,11 @@ public class ClassDiagramGenerator {
                 m.setName(method.getNameAsString());
                 m.setReturnType(method.getType().asString());
 
+                //解析方法泛型参数
+                if(method.getTypeParameters().isNonEmpty()){
+                    m.setTypeParameters(method.getTypeParameters().toString());
+                }
+                //解析参数类型
                 method.getParameters().forEach(p ->{
                     Parameter param=new Parameter();
                     param.setName(p.getNameAsString());

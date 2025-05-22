@@ -28,7 +28,9 @@ public class ClassDiagram {
         //类
         for(ClassInfo classInfo : classes){
             sb.append(classInfo.isAbstract()?"abstract ":"")
-                .append("class ").append(classInfo.getName()).append(" {\n");
+                .append("class ").append(classInfo.getName())
+                .append(classInfo.getTypeParameters()!=null ? classInfo.getTypeParameters() : "")
+                .append(" {\n");
             
             classInfo.getFields().stream().sorted(Comparator.comparingInt(Field::getAccessModifierWeight))
                     .forEach(f->sb.append("    ").append(f.toUMLString()).append("\n"));
