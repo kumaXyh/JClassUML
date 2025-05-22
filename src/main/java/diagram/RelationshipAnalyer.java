@@ -22,7 +22,7 @@ public class RelationshipAnalyer {
 
         if(isBasicOrContainerType(type))return;
 
-        //pattern编译正则表达式:判断不是<>,或空白字符，+表示1个或多个字符
+        //pattern编译正则表达式:判断不是<>,[]或空白字符，+表示1个或多个字符
         Pattern pattern=Pattern.compile("[^<>,\\s\\[\\]]+");
         //matcher查找匹配pattern（模式）的内容
         Matcher matcher=pattern.matcher(type);
