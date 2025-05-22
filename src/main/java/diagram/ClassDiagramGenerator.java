@@ -51,13 +51,13 @@ public class ClassDiagramGenerator {
             decl.getFields().forEach(field -> {
                 String accessModifier=convertModifier(field.getAccessSpecifier());
                 boolean isStatic=field.isStatic();
-                String type=field.getElementType().asString();
 
                 field.getVariables().forEach(v ->{
                     Field f=new Field();
                     f.setAccessModifier(accessModifier);
                     f.setStatic(isStatic);
                     f.setName(v.getNameAsString());
+                    String type=v.getType().toString();
                     f.setType(type);
                     classInfo.getFields().add(f);
                 });
@@ -85,6 +85,15 @@ public class ClassDiagramGenerator {
                     param.setName(p.getNameAsString());
                     param.setType(p.getType().asString());
                     m.getParameters().add(param);
+                });
+
+                method.getBody().ifPresent(body->{
+                    body.findAll(VariableDeclarator.class).forEach(vd->{
+                        Parameter lv=new Parameter();
+                        lv.setType(vd.getType().asString());
+                        lv.setName(vd.getNameAsString());
+                        m.getLocalVariables().add(lv);
+                    });
                 });
 
                 classInfo.getMethods().add(m);
@@ -130,6 +139,15 @@ public class ClassDiagramGenerator {
                     param.setName(p.getNameAsString());
                     param.setType(p.getType().asString());
                     m.getParameters().add(param);
+                });
+
+                method.getBody().ifPresent(body->{
+                    body.findAll(VariableDeclarator.class).forEach(vd->{
+                        Parameter lv=new Parameter();
+                        lv.setType(vd.getType().asString());
+                        lv.setName(vd.getNameAsString());
+                        m.getLocalVariables().add(lv);
+                    });
                 });
 
                 interfaceInfo.getMethods().add(m);
@@ -186,6 +204,15 @@ public class ClassDiagramGenerator {
                     param.setName(p.getNameAsString());
                     param.setType(p.getType().asString());
                     m.getParameters().add(param);
+                });
+
+                method.getBody().ifPresent(body->{
+                    body.findAll(VariableDeclarator.class).forEach(vd->{
+                        Parameter lv=new Parameter();
+                        lv.setType(vd.getType().asString());
+                        lv.setName(vd.getNameAsString());
+                        m.getLocalVariables().add(lv);
+                    });
                 });
 
                 enumInfo.getMethods().add(m);

@@ -8,6 +8,7 @@ public class Method extends Member{
     private String returnType;
     private boolean isAbstract;
     private String typeParameters;//泛型
+    private List<Parameter> localVariables=new ArrayList<>();//局部变量(和参数类一样直接借用了)
 
     public String toUMLString() {
         StringBuilder sb = new StringBuilder();
@@ -36,4 +37,5 @@ public class Method extends Member{
     public void setTypeParameters(String typeParameters){
         this.typeParameters=typeParameters.replace("[", "<").replace("]", ">");
     }
+    public List<Parameter> getLocalVariables(){return localVariables;}
 }

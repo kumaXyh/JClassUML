@@ -3,6 +3,8 @@ package diagram;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 public class ClassDiagram {
 
@@ -82,6 +84,26 @@ public class ClassDiagram {
                     .append(classInfo.getName()).append("\n");
             }
         }
+        //分析关联关系
+        AssociationAnalyzer associationAnalyzer=new AssociationAnalyzer();
+        associationAnalyzer.analyze(classes,enums);
+        //分析依赖关系
+        DependencyAnalyzer dependencyAnalyzer=new DependencyAnalyzer();
+        dependencyAnalyzer.analyze(classes, interfaces, enums);
+        //移除重复依赖关系
+        Set<String> dependencies=new HashSet<>(dependencyAnalyzer.getRelations());
+        dependencies.removeAll(associationAnalyzer.getRelations());
+        dependencyAnalyzer.getRelations().clear();
+        dependencies.forEach(s->dependencyAnalyzer.getRelations().add(s));
+        //输出关联、依赖关系
+        associationAnalyzer.getRelations().forEach(relation->{
+            String[] parts=relation.split(" ");
+            sb.append(parts[0]+" <-- "+parts[1]+"\n");
+        });
+        dependencyAnalyzer.getRelations().forEach(relation->{
+            String[] parts=relation.split(" ");
+            sb.append(parts[0]+" <.. "+parts[1]+"\n");
+        });
         sb.append("@enduml");
         return sb.toString();
     }
