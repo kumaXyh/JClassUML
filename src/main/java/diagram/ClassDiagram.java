@@ -12,8 +12,11 @@ public class ClassDiagram {
     private final List<InterfaceInfo> interfaces=new ArrayList<>();
     private final List<EnumInfo> enums=new ArrayList<>();
 
+    private final RelationshipAnalyzer relationshipAnalyzer=new RelationshipAnalyzer();
+
     private final InheritanceAnalyzer inheritanceAnalyzer=new InheritanceAnalyzer();
     private final ClassAnalyzer classAnalyzer=new ClassAnalyzer();
+    private final CircularAnalyzer circularAnalyzer=new CircularAnalyzer();
 
     public void addClass(ClassInfo classInfo){
         classes.add(classInfo);
@@ -67,46 +70,10 @@ public class ClassDiagram {
             sb.append("}\n");
         }
 
-        //输出继承关系
-        for(ClassInfo classInfo : classes){
-            if(classInfo.getExtendsClass()!=null){
-                sb.append(classInfo.getExtendsClass()).append(" <|-- ")
-                    .append(classInfo.getName()).append("\n");
-            }
+        if(!relationshipAnalyzer.isAnalyzed()){
+            relationshipAnalyzer.analyzeRelations(classes, interfaces, enums);
         }
-        for(InterfaceInfo interfaceInfo : interfaces){
-            for(String parentInterface: interfaceInfo.getExtendsInterfaces()){
-                sb.append(parentInterface).append(" <|-- ")
-                    .append(interfaceInfo.getName()).append("\n");
-            }
-        }
-        //输出实现关系
-        for(ClassInfo classInfo : classes){
-            for(String interfaceName: classInfo.getImplementsInterfaces()){
-                sb.append(interfaceName).append(" <|.. ")
-                    .append(classInfo.getName()).append("\n");
-            }
-        }
-        //分析关联关系
-        AssociationAnalyzer associationAnalyzer=new AssociationAnalyzer();
-        associationAnalyzer.analyze(classes,enums);
-        //分析依赖关系
-        DependencyAnalyzer dependencyAnalyzer=new DependencyAnalyzer();
-        dependencyAnalyzer.analyze(classes, interfaces, enums);
-        //移除重复依赖关系
-        Set<String> dependencies=new HashSet<>(dependencyAnalyzer.getRelations());
-        dependencies.removeAll(associationAnalyzer.getRelations());
-        dependencyAnalyzer.getRelations().clear();
-        dependencies.forEach(s->dependencyAnalyzer.getRelations().add(s));
-        //输出关联、依赖关系
-        associationAnalyzer.getRelations().forEach(relation->{
-            String[] parts=relation.split(" ");
-            sb.append(parts[0]+" <-- "+parts[1]+"\n");
-        });
-        dependencyAnalyzer.getRelations().forEach(relation->{
-            String[] parts=relation.split(" ");
-            sb.append(parts[0]+" <.. "+parts[1]+"\n");
-        });
+        sb.append(relationshipAnalyzer.toUMLString());
         sb.append("@enduml");
         return sb.toString();
     }
@@ -123,7 +90,13 @@ public class ClassDiagram {
         //继承树分析
         inheritanceAnalyzer.buildTree(classes);
         inheritanceAnalyzer.analyze(smells);
-        
+        //循环依赖分析
+        if(!relationshipAnalyzer.isAnalyzed()){
+            relationshipAnalyzer.analyzeRelations(classes, interfaces, enums);
+        }
+        if(circularAnalyzer.analyze(relationshipAnalyzer.getRelations())!=""){
+            smells.add(circularAnalyzer.analyze(relationshipAnalyzer.getRelations()));
+        }
         return smells;
     }
 

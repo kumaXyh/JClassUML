@@ -2,7 +2,7 @@ package diagram;
 
 import java.util.List;
 
-public class AssociationAnalyzer extends RelationshipAnalyer{
+public class AssociationAnalyzer extends BaseAnalyer{
     public void analyze(List<ClassInfo> classes,List<EnumInfo> enums){
         classes.forEach(c->
             c.getFields().forEach(f->

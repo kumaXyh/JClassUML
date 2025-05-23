@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;;
 
-public class RelationshipAnalyer {
+public class BaseAnalyer {
     protected final Set<String> relations=new HashSet<>();
     private static final Set<String> BASIC_TYPES=Set.of(
         "String","int","Integer","long","Long","double",

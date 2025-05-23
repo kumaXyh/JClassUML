@@ -2,7 +2,7 @@ package diagram;
 
 import java.util.List;
 
-public class DependencyAnalyzer extends RelationshipAnalyer{
+public class DependencyAnalyzer extends BaseAnalyer{
     public void analyze(List<ClassInfo> classes,List<InterfaceInfo>interfaceInfos,List<EnumInfo> enums){
         analyzeMethods(classes);
         analyzeMethods(interfaceInfos);
