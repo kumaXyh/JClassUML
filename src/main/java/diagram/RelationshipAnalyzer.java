@@ -10,6 +10,7 @@ public class RelationshipAnalyzer {
         return new ArrayList<>(relations);
     }
     public boolean isAnalyzed(){return isAnalyzed;}
+    public void setAnalyzed(boolean isAnalyzed){this.isAnalyzed=isAnalyzed;}
 
     public void analyzeRelations(List<ClassInfo> classes,List<InterfaceInfo> interfaces,List<EnumInfo> enums){
         relations.clear();
@@ -20,6 +21,9 @@ public class RelationshipAnalyzer {
         analyzeImplementations(classes);
         //分析关联/依赖关系
         analyzeAssociationsAndDependencies(classes,interfaces,enums);
+
+        //过滤掉关系中不存在的元素
+        filterInvalidRelations(classes, interfaces, enums);
 
         isAnalyzed=true;
     }
@@ -73,6 +77,27 @@ public class RelationshipAnalyzer {
         dependencyAnalyzer.getRelations().forEach(relation->{
             String[] parts=relation.split(" ");
             relations.add(new String[]{parts[0],parts[1]," <.. "});
+        });
+    }
+
+    private void filterInvalidRelations(List<ClassInfo> classes, List<InterfaceInfo> interfaces, List<EnumInfo> enums) {
+        // 收集所有有效的名称
+        Set<String> validNames = new HashSet<>();
+        
+        // 添加所有类名
+        classes.forEach(c -> validNames.add(c.getName()));
+        
+        // 添加所有接口名
+        interfaces.forEach(i -> validNames.add(i.getName()));
+        
+        // 添加所有枚举名
+        enums.forEach(e -> validNames.add(e.getName()));
+
+        // 过滤关系，只保留两端都存在的关系
+        relations.removeIf(relation -> {
+            String from = relation[0];
+            String to = relation[1];
+            return !validNames.contains(from) || !validNames.contains(to);
         });
     }
 }

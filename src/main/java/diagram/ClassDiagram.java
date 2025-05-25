@@ -16,6 +16,11 @@ public class ClassDiagram {
     private final ClassAnalyzer classAnalyzer=new ClassAnalyzer();
     private final CircularAnalyzer circularAnalyzer=new CircularAnalyzer();
 
+    public List<ClassInfo> getClasses(){return classes;}
+    public List<InterfaceInfo> getInterfaces(){return interfaces;}
+    public List<EnumInfo> getEnums(){return enums;}
+    public RelationshipAnalyzer getRelationshipAnalyzer(){return relationshipAnalyzer;}
+    
     public void addClass(ClassInfo classInfo){
         classes.add(classInfo);
     }
