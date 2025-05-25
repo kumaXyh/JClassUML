@@ -1,7 +1,10 @@
 package diagram;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.AccessSpecifier;
@@ -12,15 +15,33 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 public class ClassDiagramGenerator {
     // 解析源文件路径，返回ClassDiagram对象
     public ClassDiagram parse(Path sourcePath) throws IOException {
-        // 返回ClassDiagram对象
-        CompilationUnit cu = StaticJavaParser.parse(sourcePath);
-        ClassDiagram classDiagram = new ClassDiagram();
+        ClassDiagram classDiagram=new ClassDiagram();
 
-        cu.accept(new ClassVisitor(), classDiagram);
-        cu.accept(new InterfaceVisitor(), classDiagram);
-        cu.accept(new EnumVisitor(), classDiagram);
-
+        //目录处理
+        if(Files.isDirectory(sourcePath)){
+            try(Stream<Path> paths=Files.walk(sourcePath)){
+                paths.filter(Files::isRegularFile)
+                        .filter(p->p.toString().endsWith(".java"))
+                        .forEach(p->{
+                            try{
+                                parseSingleFile(p, classDiagram);
+                            }catch(IOException e){
+                                throw new UncheckedIOException("Failed to parse file: "+p.toString(), e);
+                            }
+                        });
+            }
+        }else{
+            parseSingleFile(sourcePath, classDiagram);
+        }
         return classDiagram;
+    }
+
+    private void parseSingleFile(Path filePath, ClassDiagram diagram) throws IOException{
+        CompilationUnit cu = StaticJavaParser.parse(filePath);
+
+        cu.accept(new ClassVisitor(), diagram);
+        cu.accept(new InterfaceVisitor(), diagram);
+        cu.accept(new EnumVisitor(), diagram);
     }
 
     private static class ClassVisitor extends VoidVisitorAdapter<ClassDiagram>{
