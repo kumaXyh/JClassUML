@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.github.javaparser.StaticJavaParser;
@@ -86,15 +87,19 @@ public class ClassDiagramGenerator {
 
             //解析方法
             decl.getMethods().forEach(method ->{
-                //构造函数不输出
-                if (method.getName().asString().equals(decl.getNameAsString())) return; 
-
                 Method m=new Method();
                 m.setAccessModifier(convertModifier(method.getAccessSpecifier()));
                 m.setStatic(method.isStatic());
                 m.setAbstract(method.isAbstract());
                 m.setName(method.getNameAsString());
                 m.setReturnType(method.getType().asString());
+
+                // 解析方法泛型参数
+                if (method.getTypeParameters().isNonEmpty()) {
+                    m.setTypeParameters("<" + method.getTypeParameters().stream()
+                        .map(tp -> tp.getNameAsString())
+                        .collect(Collectors.joining(", ")) + ">");
+                }
 
                 //解析方法泛型参数
                 if(method.getTypeParameters().isNonEmpty()){
@@ -115,6 +120,24 @@ public class ClassDiagramGenerator {
                         lv.setName(vd.getNameAsString());
                         m.getLocalVariables().add(lv);
                     });
+                });
+
+                classInfo.getMethods().add(m);
+            });
+
+            //解析构造函数
+            decl.getConstructors().forEach(constructor -> {
+                Method m = new Method();
+                m.setName(constructor.getNameAsString()); // 构造函数名 = 类名
+                m.setAccessModifier(convertModifier(constructor.getAccessSpecifier()));
+                m.setReturnType(""); // 构造函数无返回类型
+
+                // 解析参数
+                constructor.getParameters().forEach(p -> {
+                    Parameter param = new Parameter();
+                    param.setName(p.getNameAsString());
+                    param.setType(p.getType().asString());
+                    m.getParameters().add(param);
                 });
 
                 classInfo.getMethods().add(m);
@@ -154,6 +177,13 @@ public class ClassDiagramGenerator {
                 m.setAbstract(method.isAbstract());
                 m.setName(method.getNameAsString());
                 m.setReturnType(method.getType().asString());
+
+                // 解析方法泛型参数
+                if (method.getTypeParameters().isNonEmpty()) {
+                    m.setTypeParameters("<" + method.getTypeParameters().stream()
+                        .map(tp -> tp.getNameAsString())
+                        .collect(Collectors.joining(", ")) + ">");
+                }
 
                 method.getParameters().forEach(p ->{
                     Parameter param=new Parameter();
@@ -211,9 +241,6 @@ public class ClassDiagramGenerator {
 
             //解析方法
             decl.getMethods().forEach(method->{
-                //不输出构造函数
-                if (method.getName().asString().equals(decl.getNameAsString())) return; 
-
                 Method m = new Method();
                 m.setAccessModifier("+");
                 m.setStatic(method.isStatic());

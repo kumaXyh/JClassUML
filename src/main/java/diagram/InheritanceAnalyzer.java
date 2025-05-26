@@ -6,8 +6,12 @@ public class InheritanceAnalyzer {
     private final Map<String, List<String>> childToParent=new HashMap<>();
     private final Map<String, List<String>> parentToChildren=new HashMap<>();
     private final Map<String, Integer> depthCache=new HashMap<>();
+    private final Map<String, ClassInfo> classNameToClass=new HashMap<>();
 
     public void buildTree(List<ClassInfo> classes){
+        for(ClassInfo classInfo:classes){
+            classNameToClass.put(classInfo.getName(), classInfo);
+        }
         for(ClassInfo classInfo:classes){
             String className=classInfo.getName();
             String parentName=classInfo.getExtendsClass();
@@ -19,6 +23,11 @@ public class InheritanceAnalyzer {
             if(parentName!=null){
                 childToParent.get(className).add(parentName);
                 parentToChildren.computeIfAbsent(parentName, k->new ArrayList<>()).add(className);
+
+                ClassInfo parentClass=classNameToClass.get(parentName);
+                if(parentClass!=null){
+                    parentClass.getSubClasses().add(className);
+                }
             }
         }
     }

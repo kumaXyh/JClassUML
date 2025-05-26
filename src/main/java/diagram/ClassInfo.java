@@ -9,6 +9,7 @@ public class ClassInfo extends TypeInfo{
     private String typeParameters;//泛型
     private List<String> implementsInterfaces=new ArrayList<>();
     private List<Field> fields = new ArrayList<>();
+    private List<String> subClasses=new ArrayList<>();
 
     // Getters and Setters
     public List<Field> getFields() { return fields; }
@@ -30,5 +31,11 @@ public class ClassInfo extends TypeInfo{
     }
     public List<String> getImplementsInterfaces(){
         return implementsInterfaces;
+    }
+    public List<String> getSubClasses(){
+        return subClasses;
+    }
+    public void addSubClass(String subClass){
+        subClasses.add(subClass);
     }
 }
