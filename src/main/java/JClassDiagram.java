@@ -9,7 +9,7 @@ public class JClassDiagram {
 
     public static void main(String[] args) throws IOException {
         ClassDiagramGenerator generator = new ClassDiagramGenerator();
-        ClassDiagram diagram = generator.parse(Paths.get("D:\\homework\\softwareDesign\\JClassUML\\src\\test\\resources\\lab3\\Student.java"));
+        ClassDiagram diagram = generator.parse(Paths.get("D:\\homework\\softwareDesign\\JClassUML\\src\\test\\resources\\lab3\\Duck.java"));
         CommandLineTool commandLineTool = new CommandLineTool(diagram);
 
         while (true) {

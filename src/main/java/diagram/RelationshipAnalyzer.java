@@ -36,6 +36,16 @@ public class RelationshipAnalyzer {
         return relationStr;
     }
 
+    public String getRelationsBetween(String elementA, String elementB){
+        String r="";
+        for(String[] relation : relations){
+            if((relation[0].equals(elementA)&&relation[1].equals(elementB))||(relation[1].equals(elementA)&&relation[0].equals(elementB))){
+                r+=relation[0]+relation[2]+relation[1]+"\n";
+            }
+        }
+        return r;
+    }
+
     private void analyzeInheritance(List<ClassInfo> classes,List<InterfaceInfo> interfaces){
         for(ClassInfo classInfo : classes){
             if(classInfo.getExtendsClass()!=null){

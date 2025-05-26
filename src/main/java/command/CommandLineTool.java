@@ -19,6 +19,9 @@ public class CommandLineTool {
         handlers.put("delete", new DeleteCommandHandler());
         handlers.put("modify", new ModifyCommandHandler());
         handlers.put("undo", new UndoCommandHandler());
+        handlers.put("query", new QueryCommandHandler());
+        handlers.put("relate", new RelateCommandHandler());
+        handlers.put("smell", new SmellCommandHandler());
     }
 
     /**
